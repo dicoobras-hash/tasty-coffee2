@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Форма совместной закупки</title>
+    <title>Форма совместной закупки со скидками</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
         .container { max-width: 500px; background: white; padding: 30px; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -15,15 +15,28 @@
         button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
         button:hover { background-color: #218838; }
         
-        /* Стили для мини-корзины */
+        /* Корзина */
         .add-btn { background-color: #007bff; }
         .add-btn:hover { background-color: #0069d9; }
         .cart-section { background: #f8f9fa; border: 1px dashed #bbb; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
         .cart-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; border: 1px solid #ddd; font-size: 14px; }
         .remove-btn { background-color: #dc3545; width: auto; padding: 4px 8px; font-size: 12px; margin: 0; }
         .remove-btn:hover { background-color: #bd2130; }
-        
         select:disabled { background-color: #eee; cursor: not-allowed; }
+
+        /* Блок итогов по скидкам */
+        .summary-box { background: #e9ecef; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px; color: #333; line-height: 1.5; }
+        .summary-box border-highlight { font-weight: bold; color: #28a745; }
+
+        /* Персональные данные */
+        .privacy-container { display: flex; align-items: flex-start; margin-bottom: 20px; font-size: 13px; color: #555; line-height: 1.4; }
+        .privacy-container input[type="checkbox"] { margin-right: 10px; margin-top: 3px; width: auto; cursor: pointer; }
+        .privacy-link { color: #007bff; text-decoration: underline; cursor: pointer; }
+
+        /* Всплывающее окно */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: white; margin: 15% auto; padding: 25px; border-radius: 8px; max-width: 450px; position: relative; font-size: 14px; line-height: 1.5; color: #333; }
+        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
     </style>
 </head>
 <body>
@@ -42,7 +55,7 @@
 
         <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
 
-        <!-- Блок выбора товара -->
+        <!-- Выбор товара -->
         <label for="categorySelect">Выберите категорию:</label>
         <select id="categorySelect">
             <option value="">-- Выберите из списка --</option>
@@ -61,28 +74,56 @@
         <label for="quantity">Количество (шт):</label>
         <input type="number" id="quantity" min="1" value="1">
 
-        <!-- Кнопка добавления в промежуточный список -->
         <button type="button" class="add-btn" id="addToCartBtn">➕ Добавить в заказ</button>
 
-        <!-- Ваш список покупок (Корзина) -->
+        <!-- Блок корзины -->
         <div class="cart-section">
             <label>Ваш заказ:</label>
             <div id="cartList">
                 <p style="color: #888; font-style: italic; font-size: 14px; margin: 5px 0 0 0;">В заказе пока нет товаров</p>
             </div>
+            
+            <!-- Динамический блок расчета веса и скидки -->
+            <div id="summaryBox" class="summary-box" style="display: none;">
+                <div>Общий вес: <span id="totalWeightSpan" style="font-weight:bold;">0</span> кг</div>
+                <div>Начальная сумма: <span id="oldPriceSpan">0</span> руб.</div>
+                <div>Действующая скидка: <span id="discountPercentSpan" style="font-weight:bold; color:#dc3545;">0%</span></div>
+                <div style="font-size: 16px; margin-top: 5px; border-top: 1px solid #ccc; padding-top: 5px;">
+                    <b>Итого к оплате: <span id="finalPriceSpan" style="color:#28a745;">0</span> руб.</b>
+                </div>
+            </div>
         </div>
 
-        <!-- Сюда программно запишется весь список для отправки на почту -->
+        <!-- Скрытые поля для передачи агрегированных данных админу -->
         <textarea id="finalOrderHidden" name="Весь_Заказ" style="display:none;" required></textarea>
+        <input type="hidden" id="hiddenTotalWeight" name="Итоговый_Весь_Вес">
+        <input type="hidden" id="hiddenDiscount" name="Примененная_Скидка">
+        <input type="hidden" id="hiddenFinalPrice" name="Финальная_Сумма_К_Оплате">
 
         <label for="comment">Комментарий к заказу:</label>
         <textarea id="comment" name="Комментарий" rows="3" placeholder="Дополнительные пожелания..."></textarea>
+
+        <!-- Персональные данные -->
+        <div class="privacy-container">
+            <input type="checkbox" id="privacyCheckbox">
+            <label for="privacyCheckbox">
+                Я ознакомлен(а) с <span class="privacy-link" id="openModalBtn">уведомлением и политикой</span> и даю согласие на обработку моих персональных данных.
+            </label>
+        </div>
 
         <button type="submit" id="submitBtn" disabled style="background-color: #6c757d; cursor: not-allowed;">Отправить заказ</button>
     </form>
 </div>
 
-<!-- Подключаем файл с базой товаров -->
+<!-- Модальное окно ПД -->
+<div id="privacyModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" id="closeModalBtn">&times;</span>
+        <h3 style="margin-top: 0; color: #333;">Уведомление об обработке данных</h3>
+        <p>Подтверждая оформление заказа/ оплачивая заказ/ вы подтверждаете, что даете свое согласие на обработку ваших персональных данных в соответствии с Федеральным законом от 27.07.2006 N 152-ФЗ «О персональных данных»</p>
+    </div>
+</div>
+
 <script src="prodacts.js"></script>
 
 <script>
@@ -92,12 +133,46 @@
     const addToCartBtn = document.getElementById('addToCartBtn');
     const cartList = document.getElementById('cartList');
     const finalOrderHidden = document.getElementById('finalOrderHidden');
+    const privacyCheckbox = document.getElementById('privacyCheckbox');
     const submitBtn = document.getElementById('submitBtn');
+    
+    // Элементы динамического расчета стоимости
+    const summaryBox = document.getElementById('summaryBox');
+    const totalWeightSpan = document.getElementById('totalWeightSpan');
+    const oldPriceSpan = document.getElementById('oldPriceSpan');
+    const discountPercentSpan = document.getElementById('discountPercentSpan');
+    const finalPriceSpan = document.getElementById('finalPriceSpan');
+    
+    // Скрытые инпуты для Formspree
+    const hiddenTotalWeight = document.getElementById('hiddenTotalWeight');
+    const hiddenDiscount = document.getElementById('hiddenDiscount');
+    const hiddenFinalPrice = document.getElementById('hiddenFinalPrice');
 
-    // Массив, где будем хранить добавленные товары
+    const privacyModal = document.getElementById('privacyModal');
+    const openModalBtn = document.getElementById('openModalBtn');
+    const closeModalBtn = document.getElementById('closeModalBtn');
+
     let cart = [];
 
-    // 1. Фильтрация товаров по категориям
+    // Модальное окно
+    openModalBtn.addEventListener('click', () => privacyModal.style.display = 'block');
+    closeModalBtn.addEventListener('click', () => privacyModal.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === privacyModal) privacyModal.style.display = 'none'; });
+
+    function validateForm() {
+        if (cart.length > 0 && privacyCheckbox.checked) {
+            submitBtn.disabled = false;
+            submitBtn.style.backgroundColor = '#28a745';
+            submitBtn.style.cursor = 'pointer';
+        } else {
+            submitBtn.disabled = true;
+            submitBtn.style.backgroundColor = '#6c757d';
+            submitBtn.style.cursor = 'not-allowed';
+        }
+    }
+
+    privacyCheckbox.addEventListener('change', validateForm);
+
     categorySelect.addEventListener('change', function() {
         const selectedCategory = this.value;
         productSelect.innerHTML = '<option value="">-- Выберите товар --</option>';
@@ -106,8 +181,8 @@
             const filteredProducts = products.filter(product => product.category === selectedCategory);
             filteredProducts.forEach(product => {
                 const option = document.createElement('option');
-                option.value = JSON.stringify(product); // сохраняем весь объект внутри опции
-                option.textContent = `${product.name} — ${product.price} руб.`;
+                option.value = JSON.stringify(product);
+                option.textContent = `${product.name} — ${product.price} р.`;
                 productSelect.appendChild(option);
             });
             productSelect.disabled = false;
@@ -117,7 +192,6 @@
         }
     });
 
-    // 2. Добавление товара в корзину
     addToCartBtn.addEventListener('click', function() {
         if (!productSelect.value) {
             alert('Пожалуйста, выберите товар из списка.');
@@ -127,7 +201,6 @@
         const productData = JSON.parse(productSelect.value);
         const quantity = parseInt(quantityInput.value) || 1;
 
-        // Проверяем, есть ли уже такой товар в корзине
         const existingItem = cart.find(item => item.id === productData.id);
         if (existingItem) {
             existingItem.quantity += quantity;
@@ -137,54 +210,81 @@
                 name: productData.name,
                 price: productData.price,
                 code: productData.code,
+                weight: productData.weight, // Учитываем вес единицы товара
                 quantity: quantity
             });
         }
 
-        // Сбрасываем выбор количества на 1
         quantityInput.value = 1;
         updateCart();
     });
 
-    // 3. Обновление внешнего вида корзины и скрытого поля
     function updateCart() {
         cartList.innerHTML = '';
         
         if (cart.length === 0) {
             cartList.innerHTML = '<p style="color: #888; font-style: italic; font-size: 14px; margin: 5px 0 0 0;">В заказе пока нет товаров</p>';
+            summaryBox.style.display = 'none';
             finalOrderHidden.value = '';
-            submitBtn.disabled = true;
-            submitBtn.style.backgroundColor = '#6c757d';
-            submitBtn.style.cursor = 'not-allowed';
+            validateForm();
             return;
         }
 
         let textForEmail = '';
-        
-        cart.forEach((item, index) => {
-            // Формируем красивую строчку для админа
-            textForEmail += `${index + 1}) ${item.name} [Код: ${item.code || 'нет'}] — ${item.quantity} шт. (на сумму ${item.price * item.quantity} руб.)\n`;
+        let totalWeight = 0;
+        let totalOriginalPrice = 0;
 
-            // Создаем строчку в интерфейсе для пользователя
+        // Рендеринг строк и базовый подсчет веса/базовой цены
+        cart.forEach((item, index) => {
+            const itemWeightTotal = item.weight * item.quantity;
+            const itemPriceTotal = item.price * item.quantity;
+            
+            totalWeight += itemWeightTotal;
+            totalOriginalPrice += itemPriceTotal;
+
+            textForEmail += `${index + 1}) ${item.name} [Код: ${item.code || 'нет'}] — ${item.quantity} шт. (Вес: ${itemWeightTotal.toFixed(2)} кг, База: ${itemPriceTotal} руб.)\n`;
+
             const itemDiv = document.createElement('div');
             itemDiv.className = 'cart-item';
             itemDiv.innerHTML = `
-                <span>${item.name} <br><b>${item.quantity} шт.</b> x ${item.price} р.</span>
+                <span>${item.name} <br><b>${item.quantity} шт.</b> (${itemWeightTotal.toFixed(2)} кг)</span>
                 <button type="button" class="remove-btn" onclick="removeFromCart('${item.id}')">❌</button>
             `;
             cartList.appendChild(itemDiv);
         });
 
-        // Записываем собранный текст в скрытое поле
+        // ДИНАМИЧЕСКИЙ РАСЧЕТ ПРОГРЕССИВНОЙ СКИДКИ
+        let discountPercent = 0;
+        if (totalWeight >= 350) {
+            discountPercent = 35;
+        } else if (totalWeight >= 50) {
+            discountPercent = 30;
+        } else if (totalWeight >= 25) {
+            discountPercent = 20;
+        } else if (totalWeight >= 10) {
+            discountPercent = 10;
+        }
+
+        // Вычисляем финальные финансовые показатели
+        const discountAmount = totalOriginalPrice * (discountPercent / 100);
+        const finalPrice = totalOriginalPrice - discountAmount;
+
+        // Выводим расчет на экран пользователю
+        totalWeightSpan.textContent = totalWeight.toFixed(2);
+        oldPriceSpan.textContent = totalOriginalPrice;
+        discountPercentSpan.textContent = discountPercent + '%';
+        finalPriceSpan.textContent = Math.round(finalPrice);
+        summaryBox.style.display = 'block';
+
+        // Записываем финальные агрегированные данные в скрытые поля для отправки админу
         finalOrderHidden.value = textForEmail;
-        
-        // Активируем кнопку отправки формы
-        submitBtn.disabled = false;
-        submitBtn.style.backgroundColor = '#28a745';
-        submitBtn.style.cursor = 'pointer';
+        hiddenTotalWeight.value = totalWeight.toFixed(2) + " кг";
+        hiddenDiscount.value = discountPercent + "%";
+        hiddenFinalPrice.value = Math.round(finalPrice) + " руб.";
+
+        validateForm();
     }
 
-    // 4. Удаление товара из корзины
     window.removeFromCart = function(productId) {
         cart = cart.filter(item => item.id !== productId);
         updateCart();
