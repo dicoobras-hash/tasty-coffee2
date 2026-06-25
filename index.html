@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма совместной закупки</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 500px; background: white; padding: 30px; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
+        input[type="text"], input[type="tel"], input[type="number"], textarea {
+            width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px;
+        }
+        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        button:hover { background-color: #218838; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Заявка на совместную закупку</h2>
+    
+    <!-- В СТРОКЕ НИЖЕ ЗАМЕНИТЕ ССЫЛКУ НА СВОЮ ИЗ ШАГА 1 -->
+    <form action="https://formspree.io/f/xzdleadk" method="POST">
+        
+        <label for="name">Ваше ФИО:</label>
+        <input type="text" id="name" name="ФИО" required placeholder="Иван Иванов">
+
+        <label for="phone">Телефон (WhatsApp / Telegram):</label>
+        <input type="tel" id="phone" name="Телефон" required placeholder="+7 (999) 000-00-00">
+
+        <label for="product">Ссылка на товар или Артикул:</label>
+        <input type="text" id="product" name="Товар/Артикул" required placeholder="https://... или артикул">
+
+        <label for="quantity">Количество (шт):</label>
+        <input type="number" id="quantity" name="Количество" min="1" value="1" required>
+
+        <label for="details">Размер / Цвет / Параметры:</label>
+        <input type="text" id="details" name="Параметры" placeholder="Например: Размер XL, цвет синий">
+
+        <label for="comment">Комментарий к заказу:</label>
+        <textarea id="comment" name="Комментарий" rows="3" placeholder="Дополнительные пожелания..."></textarea>
+
+        <button type="submit">Отправить заказ</button>
+    </form>
+</div>
+
+</body>
+</html>
