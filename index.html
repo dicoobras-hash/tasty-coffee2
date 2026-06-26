@@ -3,293 +3,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Форма совместной закупки со скидками</title>
+    <title>Tasty Coffee — Совместная закупка</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 500px; background: white; padding: 30px; margin: 20px auto; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #333; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
-        select, input[type="text"], input[type="tel"], input[type="number"], textarea {
-            width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; background-color: #fff;
-        }
-        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; font-weight: bold; margin-bottom: 15px; }
-        button:hover { background-color: #218838; }
-        
-        /* Корзина */
-        .add-btn { background-color: #007bff; }
-        .add-btn:hover { background-color: #0069d9; }
-        .cart-section { background: #f8f9fa; border: 1px dashed #bbb; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-        .cart-item { display: flex; justify-content: space-between; align-items: center; background: white; padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; border: 1px solid #ddd; font-size: 14px; }
-        .remove-btn { background-color: #dc3545; width: auto; padding: 4px 8px; font-size: 12px; margin: 0; }
-        .remove-btn:hover { background-color: #bd2130; }
-        select:disabled { background-color: #eee; cursor: not-allowed; }
-
-        /* Блок итогов по скидкам */
-        .summary-box { background: #e9ecef; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 14px; color: #333; line-height: 1.5; }
-        .summary-box border-highlight { font-weight: bold; color: #28a745; }
-
-        /* Персональные данные */
-        .privacy-container { display: flex; align-items: flex-start; margin-bottom: 20px; font-size: 13px; color: #555; line-height: 1.4; }
-        .privacy-container input[type="checkbox"] { margin-right: 10px; margin-top: 3px; width: auto; cursor: pointer; }
-        .privacy-link { color: #007bff; text-decoration: underline; cursor: pointer; }
-
-        /* Всплывающее окно */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: white; margin: 15% auto; padding: 25px; border-radius: 8px; max-width: 450px; position: relative; font-size: 14px; line-height: 1.5; color: #333; }
-        .close-modal { position: absolute; right: 15px; top: 10px; font-size: 24px; cursor: pointer; color: #aaa; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f6f2; }
     </style>
 </head>
-<body>
+<body class="min-h-screen pb-12">
 
-<div class="container">
-    <h2>Заявка на совместную закупку</h2>
-    
-    <!-- УКАЖИТЕ СВОЮ ССЫЛКУ ИЗ FORMSPREE НИЖЕ -->
-    <form action="https://formspree.io/f/xzdleadk" method="POST" id="orderForm">
-        
-        <label for="name">Ваше ФИО:</label>
-        <input type="text" id="name" name="ФИО" required placeholder="Иван Иванов">
-
-        <label for="phone">Телефон (WhatsApp / Telegram):</label>
-        <input type="tel" id="phone" name="Телефон" required placeholder="+7 (999) 000-00-00">
-
-        <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
-
-        <!-- Выбор товара -->
-        <label for="categorySelect">Выберите категорию:</label>
-        <select id="categorySelect">
-            <option value="">-- Выберите из списка --</option>
-            <option value="Кофе">Кофе</option>
-            <option value="Чай">Чай</option>
-            <option value="Капсулы">Капсулы</option>
-            <option value="Дрип-пакеты">Дрип-пакеты</option>
-            <option value="Аксессуары">Аксессуары</option>
-        </select>
-
-        <label for="productSelect">Выберите товар:</label>
-        <select id="productSelect" disabled>
-            <option value="">-- Сначала выберите категорию --</option>
-        </select>
-
-        <label for="quantity">Количество (шт):</label>
-        <input type="number" id="quantity" min="1" value="1">
-
-        <button type="button" class="add-btn" id="addToCartBtn">➕ Добавить в заказ</button>
-
-        <!-- Блок корзины -->
-        <div class="cart-section">
-            <label>Ваш заказ:</label>
-            <div id="cartList">
-                <p style="color: #888; font-style: italic; font-size: 14px; margin: 5px 0 0 0;">В заказе пока нет товаров</p>
+    <div class="max-w-7xl mx-auto px-4 pt-8">
+        <header class="mb-8 flex flex-wrap justify-between items-center border-b border-stone-200 pb-5 gap-4">
+            <div>
+                <h1 class="text-3xl font-black text-stone-900 tracking-tight">TASTY COFFEE</h1>
+                <p class="text-stone-500 text-sm mt-0.5">Система коллективных заказов со ступенчатой скидкой</p>
             </div>
+            <button onclick="toggleAdminPanel()" class="px-4 py-2 bg-stone-200 text-stone-700 rounded-lg text-xs font-semibold hover:bg-stone-300 transition">
+                ⚙️ Настройки организатора
+            </button>
+        </header>
+
+        <div id="adminPanel" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-5 mb-8 shadow-sm transition-all">
+            <div class="flex justify-between items-start mb-3">
+                <h2 class="text-base font-bold text-amber-900 flex items-center gap-2">
+                    🔧 Параметры распределения маржи
+                </h2>
+                <button onclick="toggleAdminPanel()" class="text-amber-700 hover:text-amber-900 text-sm font-bold">✕ Закрыть</button>
+            </div>
+            <div class="flex flex-wrap items-center gap-6">
+                <div>
+                    <label class="block text-xs font-semibold text-amber-800 mb-1" for="discountReduction">
+                        Урезать скидку фабрики на (процентные пункты):
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <input type="number" id="discountReduction" value="5" min="0" max="35" step="1"
+                               class="w-20 px-3 py-1.5 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold text-center text-stone-900">
+                        <span class="text-amber-900 font-bold">%</span>
+                    </div>
+                </div>
+                <p class="text-xs text-amber-800 max-w-xl leading-relaxed">
+                    <strong>Как это работает:</strong> Если суммарный вес кофе всех участников превысит 25 кг, фабрика даст скидку 20%. Если здесь указано <span class="font-bold">5%</span>, то корзина пересчитается под <span class="font-bold">15%</span>. Чай и сиропы всегда остаются по базовой цене. Значение сохраняется в браузере.
+                </p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
-            <!-- Динамический блок расчета веса и скидки -->
-            <div id="summaryBox" class="summary-box" style="display: none;">
-                <div>Общий вес: <span id="totalWeightSpan" style="font-weight:bold;">0</span> кг</div>
-                <div>Начальная сумма: <span id="oldPriceSpan">0</span> руб.</div>
-                <div>Действующая скидка: <span id="discountPercentSpan" style="font-weight:bold; color:#dc3545;">0%</span></div>
-                <div style="font-size: 16px; margin-top: 5px; border-top: 1px solid #ccc; padding-top: 5px;">
-                    <b>Итого к оплате: <span id="finalPriceSpan" style="color:#28a745;">0</span> руб.</b>
+            <div class="lg:col-span-2 space-y-6">
+                <div class="flex flex-wrap gap-2 border-b border-stone-200 pb-2" id="tabsHeaders">
+                    </div>
+
+                <div class="relative">
+                    <input type="text" id="searchBar" placeholder="Поиск по наименованию или коду товара..." 
+                           class="w-full pl-4 pr-4 py-3 bg-white border border-stone-200 rounded-xl shadow-sm text-sm focus:outline-none focus:ring-2 focus:ring-stone-400 text-stone-800 placeholder-stone-400">
+                </div>
+
+                <div class="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-stone-50 border-b border-stone-100 text-xs font-bold text-stone-500 uppercase tracking-wider">
+                                    <th class="p-4">Товар / Артикул</th>
+                                    <th class="p-4 text-right">Цена</th>
+                                    <th class="p-4 text-center">Скидка?</th>
+                                    <th class="p-4 text-center w-32">Количество</th>
+                                </tr>
+                            </thead>
+                            <tbody id="catalogTableBody" class="divide-y divide-stone-100">
+                                </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
+
+            <div class="bg-stone-900 text-white border border-stone-800 rounded-3xl p-6 shadow-xl sticky top-6">
+                <h3 class="text-xl font-bold tracking-tight mb-4">Детализация расчета</h3>
+                
+                <div class="space-y-3.5 text-sm border-b border-stone-800 pb-4">
+                    <div class="flex justify-between text-stone-400">
+                        <span>Выбрано наименований:</span>
+                        <span id="summaryTotalItems" class="text-white font-medium">0 шт.</span>
+                    </div>
+                    <div class="flex justify-between text-stone-400">
+                        <span>Вес учитываемого кофе:</span>
+                        <span id="summaryCoffeeWeight" class="text-amber-400 font-bold">0.00 кг</span>
+                    </div>
+                </div>
+
+                <div class="space-y-3.5 text-sm pt-4 border-b border-stone-800 pb-4">
+                    <div class="flex justify-between text-stone-400">
+                        <span>Скидка фабрики (по весу):</span>
+                        <span id="summaryFactoryDiscount" class="text-stone-500 line-through">0%</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-stone-300 font-medium">Ваша финальная скидка:</span>
+                        <span id="summaryFinalDiscount" class="text-xl font-black text-emerald-400">0%</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 space-y-2">
+                    <div class="text-xs text-stone-500 text-right">Сумма без скидки: <span id="summaryRawPrice">0</span> ₽</div>
+                    <div class="flex justify-between items-baseline">
+                        <span class="text-base font-medium text-stone-300">Итого к оплате:</span>
+                        <span id="summaryTotalPrice" class="text-3xl font-black tracking-tight text-white">0 ₽</span>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-2">
+                    <button onclick="copyOrderToClipboard()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-4 rounded-xl transition active:scale-[0.99] text-sm tracking-wide shadow-lg shadow-emerald-900/20">
+                        📋 Скопировать спецификацию заказа
+                    </button>
+                </div>
+            </div>
+
         </div>
-
-        <!-- Скрытые поля для передачи агрегированных данных админу -->
-        <textarea id="finalOrderHidden" name="Весь_Заказ" style="display:none;" required></textarea>
-        <input type="hidden" id="hiddenTotalWeight" name="Итоговый_Весь_Вес">
-        <input type="hidden" id="hiddenDiscount" name="Примененная_Скидка">
-        <input type="hidden" id="hiddenFinalPrice" name="Финальная_Сумма_К_Оплате">
-
-        <label for="comment">Комментарий к заказу:</label>
-        <textarea id="comment" name="Комментарий" rows="3" placeholder="Дополнительные пожелания..."></textarea>
-
-        <!-- Персональные данные -->
-        <div class="privacy-container">
-            <input type="checkbox" id="privacyCheckbox">
-            <label for="privacyCheckbox">
-                Я ознакомлен(а) с <span class="privacy-link" id="openModalBtn">уведомлением и политикой</span> и даю согласие на обработку моих персональных данных.
-            </label>
-        </div>
-
-        <button type="submit" id="submitBtn" disabled style="background-color: #6c757d; cursor: not-allowed;">Отправить заказ</button>
-    </form>
-</div>
-
-<!-- Модальное окно ПД -->
-<div id="privacyModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" id="closeModalBtn">&times;</span>
-        <h3 style="margin-top: 0; color: #333;">Уведомление об обработке данных</h3>
-        <p>Подтверждая оформление заказа/ оплачивая заказ/ вы подтверждаете, что даете свое согласие на обработку ваших персональных данных в соответствии с Федеральным законом от 27.07.2006 N 152-ФЗ «О персональных данных»</p>
     </div>
-</div>
 
-<script src="prodacts.js"></script>
+    <script src="prodacts.js"></script>
 
-<script>
-    const categorySelect = document.getElementById('categorySelect');
-    const productSelect = document.getElementById('productSelect');
-    const quantityInput = document.getElementById('quantity');
-    const addToCartBtn = document.getElementById('addToCartBtn');
-    const cartList = document.getElementById('cartList');
-    const finalOrderHidden = document.getElementById('finalOrderHidden');
-    const privacyCheckbox = document.getElementById('privacyCheckbox');
-    const submitBtn = document.getElementById('submitBtn');
-    
-    // Элементы динамического расчета стоимости
-    const summaryBox = document.getElementById('summaryBox');
-    const totalWeightSpan = document.getElementById('totalWeightSpan');
-    const oldPriceSpan = document.getElementById('oldPriceSpan');
-    const discountPercentSpan = document.getElementById('discountPercentSpan');
-    const finalPriceSpan = document.getElementById('finalPriceSpan');
-    
-    // Скрытые инпуты для Formspree
-    const hiddenTotalWeight = document.getElementById('hiddenTotalWeight');
-    const hiddenDiscount = document.getElementById('hiddenDiscount');
-    const hiddenFinalPrice = document.getElementById('hiddenFinalPrice');
+    <script>
+        // Сетка прогрессивных скидок фабрики Tasty Coffee
+        const discountTiers = [
+            { min: 0, rate: 0.00 },
+            { min: 10, rate: 0.10 },
+            { min: 25, rate: 0.20 },
+            { min: 50, rate: 0.30 },
+            { min: 350, rate: 0.35 }
+        ];
 
-    const privacyModal = document.getElementById('privacyModal');
-    const openModalBtn = document.getElementById('openModalBtn');
-    const closeModalBtn = document.getElementById('closeModalBtn');
+        let currentCategory = 'Все';
+        let searchQuery = '';
+        const quantities = {}; // Хранилище вида {productId: quantity}
 
-    let cart = [];
-
-    // Модальное окно
-    openModalBtn.addEventListener('click', () => privacyModal.style.display = 'block');
-    closeModalBtn.addEventListener('click', () => privacyModal.style.display = 'none');
-    window.addEventListener('click', (e) => { if (e.target === privacyModal) privacyModal.style.display = 'none'; });
-
-    function validateForm() {
-        if (cart.length > 0 && privacyCheckbox.checked) {
-            submitBtn.disabled = false;
-            submitBtn.style.backgroundColor = '#28a745';
-            submitBtn.style.cursor = 'pointer';
-        } else {
-            submitBtn.disabled = true;
-            submitBtn.style.backgroundColor = '#6c757d';
-            submitBtn.style.cursor = 'not-allowed';
+        // Загрузка настроек админа из локальной памяти браузера
+        if(localStorage.getItem('discountReduction') === null) {
+            localStorage.setItem('discountReduction', '5');
         }
-    }
+        document.getElementById('discountReduction').value = localStorage.getItem('discountReduction');
 
-    privacyCheckbox.addEventListener('change', validateForm);
-
-    categorySelect.addEventListener('change', function() {
-        const selectedCategory = this.value;
-        productSelect.innerHTML = '<option value="">-- Выберите товар --</option>';
-        
-        if (selectedCategory) {
-            const filteredProducts = products.filter(product => product.category === selectedCategory);
-            filteredProducts.forEach(product => {
-                const option = document.createElement('option');
-                option.value = JSON.stringify(product);
-                option.textContent = `${product.name} — ${product.price} р.`;
-                productSelect.appendChild(option);
-            });
-            productSelect.disabled = false;
-        } else {
-            productSelect.disabled = true;
-            productSelect.innerHTML = '<option value="">-- Сначала выберите категорию --</option>';
-        }
-    });
-
-    addToCartBtn.addEventListener('click', function() {
-        if (!productSelect.value) {
-            alert('Пожалуйста, выберите товар из списка.');
-            return;
+        // Показать/скрыть панель администратора
+        function toggleAdminPanel() {
+            document.getElementById('adminPanel').classList.toggle('hidden');
         }
 
-        const productData = JSON.parse(productSelect.value);
-        const quantity = parseInt(quantityInput.value) || 1;
-
-        const existingItem = cart.find(item => item.id === productData.id);
-        if (existingItem) {
-            existingItem.quantity += quantity;
-        } else {
-            cart.push({
-                id: productData.id,
-                name: productData.name,
-                price: productData.price,
-                code: productData.code,
-                weight: productData.weight, // Учитываем вес единицы товара
-                quantity: quantity
-            });
-        }
-
-        quantityInput.value = 1;
-        updateCart();
-    });
-
-    function updateCart() {
-        cartList.innerHTML = '';
-        
-        if (cart.length === 0) {
-            cartList.innerHTML = '<p style="color: #888; font-style: italic; font-size: 14px; margin: 5px 0 0 0;">В заказе пока нет товаров</p>';
-            summaryBox.style.display = 'none';
-            finalOrderHidden.value = '';
-            validateForm();
-            return;
-        }
-
-        let textForEmail = '';
-        let totalWeight = 0;
-        let totalOriginalPrice = 0;
-
-        // Рендеринг строк и базовый подсчет веса/базовой цены
-        cart.forEach((item, index) => {
-            const itemWeightTotal = item.weight * item.quantity;
-            const itemPriceTotal = item.price * item.quantity;
+        // Построение панели вкладок (категорий)
+        function renderTabs() {
+            const categories = ['Все', ...new Set(products.map(p => p.category))];
+            const container = document.getElementById('tabsHeaders');
             
-            totalWeight += itemWeightTotal;
-            totalOriginalPrice += itemPriceTotal;
+            container.innerHTML = categories.map(cat => `
+                <button onclick="setCategory('${cat}')" class="px-4 py-2 text-xs font-bold rounded-lg transition ${
+                    currentCategory === cat 
+                    ? 'bg-stone-950 text-white shadow-sm' 
+                    : 'bg-white text-stone-600 border border-stone-200 hover:bg-stone-50'
+                }">
+                    ${cat}
+                </button>
+            `).join('');
+        }
 
-            textForEmail += `${index + 1}) ${item.name} [Код: ${item.code || 'нет'}] — ${item.quantity} шт. (Вес: ${itemWeightTotal.toFixed(2)} кг, База: ${itemPriceTotal} руб.)\n`;
+        function setCategory(cat) {
+            currentCategory = cat;
+            renderTabs();
+            renderCatalog();
+        }
 
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'cart-item';
-            itemDiv.innerHTML = `
-                <span>${item.name} <br><b>${item.quantity} шт.</b> (${itemWeightTotal.toFixed(2)} кг)</span>
-                <button type="button" class="remove-btn" onclick="removeFromCart('${item.id}')">❌</button>
-            `;
-            cartList.appendChild(itemDiv);
+        // Рендеринг таблицы ассортимента
+        function renderCatalog() {
+            const tbody = document.getElementById('catalogTableBody');
+            
+            // Фильтрация по табу и по поисковой строке
+            const filtered = products.filter(p => {
+                const matchesTab = (currentCategory === 'Все' || p.category === currentCategory);
+                const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                                      (p.code && p.code.includes(searchQuery));
+                return matchesTab && matchesSearch;
+            });
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-sm text-stone-400 italic">Товары не найдены</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(p => {
+                const currentQty = quantities[p.id] || 0;
+                return `
+                    <tr class="hover:bg-stone-50/50 transition">
+                        <td class="p-4">
+                            <div class="font-semibold text-stone-900 text-sm">${p.name}</div>
+                            <div class="text-xs text-stone-400 mt-0.5">Код: ${p.code || '—'} | Вес единицы: ${p.weight} кг</div>
+                        </td>
+                        <td class="p-4 text-right font-medium text-stone-900 text-sm">${p.price} ₽</td>
+                        <td class="p-4 text-center text-base">${p.category === 'Кофе' ? '☕' : '❌'}</td>
+                        <td class="p-4 text-center">
+                            <input type="number" min="0" value="${currentQty}" data-id="${p.id}" oninput="updateQuantity(this)"
+                                   class="w-20 px-2 py-1.5 border border-stone-200 rounded-lg text-center text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-stone-400 bg-white">
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Обновление количества во временной памяти при вводе пользователя
+        function updateQuantity(input) {
+            const id = input.dataset.id;
+            const val = parseInt(input.value) || 0;
+            if (val > 0) {
+                quantities[id] = val;
+            } else {
+                delete quantities[id];
+            }
+            calculateTotals();
+        }
+
+        // Основное ядро калькулятора (расчет веса кофе и итогов)
+        function calculateTotals() {
+            const reduction = parseFloat(document.getElementById('discountReduction').value) || 0;
+            localStorage.setItem('discountReduction', reduction.toString());
+
+            let totalCoffeeWeight = 0;
+            let totalItemsCount = 0;
+            let rawPriceSum = 0;
+
+            // Сбор метрик по выбранным товарам
+            for (let id in quantities) {
+                const qty = quantities[id];
+                const product = products.find(p => p.id === id);
+                if (!product) continue;
+
+                totalItemsCount += qty;
+                rawPriceSum += product.price * qty;
+
+                if (product.category === 'Кофе') {
+                    totalCoffeeWeight += product.weight * qty;
+                }
+            }
+
+            // Поиск подходящей ступени скидки фабрики по весу кофе
+            let factoryRate = 0;
+            for (let tier of discountTiers) {
+                if (totalCoffeeWeight >= tier.min) {
+                    factoryRate = tier.rate;
+                }
+            }
+
+            // Итоговая скидка с учетом урезания организатором
+            const reductionRate = reduction / 100;
+            const finalDiscountRate = Math.max(0, factoryRate - reductionRate);
+
+            // Финальный подсчет стоимости с разной логикой категорий
+            let finalPriceSum = 0;
+            for (let id in quantities) {
+                const qty = quantities[id];
+                const product = products.find(p => p.id === id);
+                if (!product) continue;
+
+                const itemCost = product.price * qty;
+                if (product.category === 'Кофе') {
+                    finalPriceSum += itemCost * (1 - finalDiscountRate);
+                } else {
+                    finalPriceSum += itemCost; // На чай и сиропы скидки нет
+                }
+            }
+
+            // Обновление UI элементов в блоке расчетов
+            document.getElementById('summaryTotalItems').innerText = `${totalItemsCount} шт.`;
+            document.getElementById('summaryCoffeeWeight').innerText = `${totalCoffeeWeight.toFixed(2)} кг`;
+            document.getElementById('summaryFactoryDiscount').innerText = `${(factoryRate * 100).toFixed(0)}%`;
+            document.getElementById('summaryFinalDiscount').innerText = `${(finalDiscountRate * 100).toFixed(0)}%`;
+            document.getElementById('summaryRawPrice').innerText = Math.round(rawPriceSum).toLocaleString('ru-RU');
+            document.getElementById('summaryTotalPrice').innerText = `${Math.round(finalPriceSum).toLocaleString('ru-RU')} ₽`;
+        }
+
+        // Функция копирования спецификации заказа
+        function copyOrderToClipboard() {
+            let text = `🛒 СПЕЦИФИКАЦИЯ ЗАКАЗА TASTY COFFEE\n`;
+            text += `========================================\n`;
+            
+            let counter = 1;
+            let hasItems = false;
+            
+            for (let id in quantities) {
+                const qty = quantities[id];
+                const p = products.find(prod => prod.id === id);
+                if(p) {
+                    hasItems = true;
+                    text += `${counter}. ${p.name} — ${qty} шт. [Код: ${p.code || '—'}]\n`;
+                    counter++;
+                }
+            }
+
+            if(!hasItems) {
+                alert('Ваша корзина пуста!');
+                return;
+            }
+
+            text += `========================================\n`;
+            text += `Общий вес кофе: ${document.getElementById('summaryCoffeeWeight').innerText}\n`;
+            text += `Примененная скидка: ${document.getElementById('summaryFinalDiscount').innerText}\n`;
+            text += `Итоговая сумма к оплате: ${document.getElementById('summaryTotalPrice').innerText}\n`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Данные заказа скопированы в буфер обмена! Отправьте их организатору закупки.');
+            });
+        }
+
+        // Слушатели событий ввода
+        document.getElementById('searchBar').addEventListener('input', function(e) {
+            searchQuery = e.target.value;
+            renderCatalog();
         });
 
-        // ДИНАМИЧЕСКИЙ РАСЧЕТ ПРОГРЕССИВНОЙ СКИДКИ
-        let discountPercent = 0;
-        if (totalWeight >= 350) {
-            discountPercent = 35;
-        } else if (totalWeight >= 50) {
-            discountPercent = 30;
-        } else if (totalWeight >= 25) {
-            discountPercent = 20;
-        } else if (totalWeight >= 10) {
-            discountPercent = 10;
-        }
+        document.getElementById('discountReduction').addEventListener('input', calculateTotals);
 
-        // Вычисляем финальные финансовые показатели
-        const discountAmount = totalOriginalPrice * (discountPercent / 100);
-        const finalPrice = totalOriginalPrice - discountAmount;
-
-        // Выводим расчет на экран пользователю
-        totalWeightSpan.textContent = totalWeight.toFixed(2);
-        oldPriceSpan.textContent = totalOriginalPrice;
-        discountPercentSpan.textContent = discountPercent + '%';
-        finalPriceSpan.textContent = Math.round(finalPrice);
-        summaryBox.style.display = 'block';
-
-        // Записываем финальные агрегированные данные в скрытые поля для отправки админу
-        finalOrderHidden.value = textForEmail;
-        hiddenTotalWeight.value = totalWeight.toFixed(2) + " кг";
-        hiddenDiscount.value = discountPercent + "%";
-        hiddenFinalPrice.value = Math.round(finalPrice) + " руб.";
-
-        validateForm();
-    }
-
-    window.removeFromCart = function(productId) {
-        cart = cart.filter(item => item.id !== productId);
-        updateCart();
-    };
-</script>
-
+        // Инициализация при первой загрузке страницы
+        renderTabs();
+        renderCatalog();
+        calculateTotals();
+    </script>
 </body>
 </html>
